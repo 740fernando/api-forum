@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.List;
 @RequestMapping("/topicos")//a mesma url vale para o metodo get e para o post
 public class TopicosController {
 
-    //@Autowired - Dispensa a sintaxe de New
+
     @Autowired
     private TopicoRepository topicoRepository;
     @Autowired
@@ -49,9 +50,11 @@ public class TopicosController {
             return TopicoDto.converter(topicos);
         }
     }
+    //Funcionamento web - informacoes cadastradas pelo usuario sao armazenadas em Json e o spring chama o "JACKSON"
+    //para converter em TopicForm
     @PostMapping
-     public ResponseEntity<TopicoDto> cadastrar(@RequestBody  TopicoForm form, UriComponentsBuilder uriBuilder){ //Indicar ao Spring que os parâmetros enviados no corpo da requisição devem ser atribuídos ao parâmetro do método
-        Topico topico= form.converter(cursoRepository);//converter cursoRepository
+     public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder){
+        Topico topico= form.converter(cursoRepository);
         topicoRepository.save(topico);// salva novo topico
         URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri(); //  não vou passar o caminho completo, o caminho do servidor. Só vou passar o caminho do recurso.
         return ResponseEntity.created(uri).body(new TopicoDto(topico));
@@ -72,13 +75,29 @@ public class TopicosController {
  * o "Nome do atributo", porque ele sabe que é para filtrar pelo relacionamento.
  *
  *  DICIONARIO
+ *  @Autowired - Dispensa a sintaxe de New
+ *
  *  @ResponseBody -Por padrão, o Spring considera que o retorno do método é o nome
  * da página que ele deve carregar, mas ao utilizar a anotação @ResponseBody,
  * indicamos que o retorno do método deve ser serializado e devolvido no corpo da resposta.
+ * Indicar ao Spring que os parâmetros enviados no corpo da requisição devem
+ * ser atribuídos ao parâmetro do método
  *
  * Endpoint - é a URL onde seu serviço pode ser acessado por uma aplicação cliente
  *
  * @RestController - Essa anotação é justamente para dizer que o @controller é um @Rest controller
  *  Por padrão, ele já assume que todo metodo já vai ter o @ResponseBody
+ *
+ *@ResponseEntity- para montar uma resposta a ser devolvida ao cliente da API, devemos utilizar a classe ResponseEntity
+ * topicoRepository.save(topico)- salva novo topico
+ *
+ * URI uri - uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
+ * não vou passar o caminho completo, o caminho do servidor. Só vou passar o caminho do recurso.
+ *
+ * form.converter(cursoRepository);//converter cursoRepository
+ *
+ * @Valid - que é do próprio Bean Validation - para avisar para o Spring: quando você for injetar
+ * o TopicoForm, puxando os dados que estão vindo na requisição, rode as validações, @Valid,
+ * do Bean Validation.
  *
  */
