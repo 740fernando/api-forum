@@ -1,15 +1,15 @@
 package br.com.alura.forum.controller.dto;
 
 import br.com.alura.forum.modelo.Topico;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * não é uma boa prática retornar entidades JPA nos métodos dos controllers, sendo mais indicado retornar
- * classes que seguem o padrão DTO (Data Transfer Object);
+ * não é uma boa prática retornar entidades JPA nos métodos dos controllers, sendo mais indicado
+ * retornar classes que seguem o padrão DTO (Data Transfer Object);
  */
 //Consigo controlar quais campos quero devolver, porque nem sempre eu quero devolver tudo que tem na
 //minha classe de domínio.
@@ -26,11 +26,25 @@ public class TopicoDto {
         this.titulo=topico.getTitulo();
         this.mensagem=topico.getMensagem();
         this.dataCriacao=topico.getDataCriacao();
+    }
+    public Long getId() {
+        return id;
+    }
 
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
     }
 
     public static List<TopicoDto> converter(List<Topico> topicos) {
-        return  topicos.stream().map(TopicoDto::new).collect(Collectors.toList());
+        return topicos.stream().map(TopicoDto::new).collect(Collectors.toList());
     }
 }
 /**

@@ -1,15 +1,28 @@
 package br.com.alura.forum.modelo;
 
+import lombok.Data;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+/**
+ *  No @GeneratedValue, tenho que colocar qual é a estratégia, strategy.
+ *  Geralmente colocamos a IDENTITY, se for "auto-increment", ou SEQUENCE,
+ *  se seu banco de dados utilizar.
+ *
+ */
+@Data
+@Entity
 public class Curso {
 
+
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String nome;
 	private String categoria;
 
-	public Curso(String nome, String categoria) {
-		this.nome = nome;
-		this.categoria = categoria;
-	}
 	
 	@Override
 	public int hashCode() {
@@ -34,30 +47,6 @@ public class Curso {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public String getCategoria() {
-		return categoria;
-	}
-
-	public void setCategoria(String categoria) {
-		this.categoria = categoria;
 	}
 
 }

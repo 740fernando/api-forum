@@ -3,6 +3,8 @@ package br.com.alura.forum.controller;
 import br.com.alura.forum.controller.dto.TopicoDto;
 import br.com.alura.forum.modelo.Curso;
 import br.com.alura.forum.modelo.Topico;
+import br.com.alura.forum.repository.TopicoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -14,13 +16,22 @@ import java.util.List;
 @RestController
 public class TopicosController {
 
-    //@ResponseBody - Essa anotacao, diz para o Spring, que usara o propria msg passada no metodo
-    @RequestMapping("/topicos")
-    @ResponseBody
-    public List<TopicoDto>list(){
-        Topico topico = new Topico("01-00Dúvida","Dúvida com Spring",new Curso("Spring","Programação"));
+    //@Autowired - Dispensa a sintaxe de New
+    @Autowired
+    private TopicoRepository topicoRepository;
 
-        return TopicoDto.converter(Arrays.asList(topico,topico,topico));
+    //mostra todas
+    @RequestMapping("/topicos")
+    public List<TopicoDto>lista(String nomeCurso){
+        if(nomeCurso==null){
+            List<Topico> topicos =topicoRepository.findAll();
+            return TopicoDto.converter(topicos);
+        }else{
+            List<Topico> topicos = topicoRepository.findByCurso_Nome(nomeCurso);
+            return TopicoDto.converter(topicos);
+        }
+
+
 
     }
 }
@@ -31,6 +42,12 @@ public class TopicosController {
  * dos panos". Ele pegou a lista, List<Topico>, que foi
  * devolvida, passou ela para o Jackson. O Jackson converteu
  * para JSON, e ele pegou esse JSON e devolveu como uma string.
+ *
+ * Dessa maneira, filtramos por parâmetros usando o Spring Data.
+ * Você cria um método seguindo o padrão de nomenclatura do Spring Data,
+ * findBy e o nome do atributo que você quer filtrar. Se for o atributo de
+ * um relacionamento, "Nome do atributo do relacionamento" e, concatenado,
+ * o "Nome do atributo", porque ele sabe que é para filtrar pelo relacionamento.
  *
  *  DICIONARIO
  *  @ResponseBody -Por padrão, o Spring considera que o retorno do método é o nome
