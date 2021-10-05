@@ -1,27 +1,45 @@
 package br.com.alura.forum.controller;
 
 import br.com.alura.forum.controller.dto.TopicoDto;
+import br.com.alura.forum.controller.form.TopicoForm;
 import br.com.alura.forum.modelo.Curso;
 import br.com.alura.forum.modelo.Topico;
+import br.com.alura.forum.repository.CursoRepository;
 import br.com.alura.forum.repository.TopicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * O problema é que em todos os métodos a URL vai se repetir. Se um dia eu quiser alterar,
+ * vou ter que alterar em todos os métodos. Podemos tirar a anotação @RequestMapping(Value=
+ * "/topicos", method = RequestMethod.GET) de cima do método e colocar em cima da classe.
+ * Mas aí, na classe, não vou colocar o método, vou colocar só a URL. Então, é como se
+ * disséssemos ao Spring: o TopicosController responde às aquisições que começam com "/
+ *
+ * E aí, no método cadastrar eu faço a mesma coisa. Só que aí é POST ao invés de GET, porque estou
+ * postando uma informação, fazendo um cadastro. Dessa maneira, não teria mais conflito. O Spring
+ * sabe que a URL é a mesma, mas os métodos são diferentes.
+ */
+
 @RestController
+@RequestMapping("/topicos")//a mesma url vale para o metodo get e para o post
 public class TopicosController {
 
     //@Autowired - Dispensa a sintaxe de New
     @Autowired
     private TopicoRepository topicoRepository;
+    @Autowired
+    private CursoRepository cursoRepository;
 
-    //mostra todas
-    @RequestMapping("/topicos")
+
+    @GetMapping
     public List<TopicoDto>lista(String nomeCurso){
         if(nomeCurso==null){
             List<Topico> topicos =topicoRepository.findAll();
@@ -30,9 +48,13 @@ public class TopicosController {
             List<Topico> topicos = topicoRepository.findByCurso_Nome(nomeCurso);
             return TopicoDto.converter(topicos);
         }
-
-
-
+    }
+    @PostMapping
+     public ResponseEntity<TopicoDto> cadastrar(@RequestBody  TopicoForm form, UriComponentsBuilder uriBuilder){ //Indicar ao Spring que os parâmetros enviados no corpo da requisição devem ser atribuídos ao parâmetro do método
+        Topico topico= form.converter(cursoRepository);//converter cursoRepository
+        topicoRepository.save(topico);// salva novo topico
+        URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri(); //  não vou passar o caminho completo, o caminho do servidor. Só vou passar o caminho do recurso.
+        return ResponseEntity.created(uri).body(new TopicoDto(topico));
     }
 }
 /**

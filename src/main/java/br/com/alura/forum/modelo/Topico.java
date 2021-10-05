@@ -24,7 +24,7 @@ import javax.persistence.OneToMany;
  * , porque na classe, e nela, a resposta, estará mapeado o relacionamento com o tópico. Então, mappedBy = "topico"
  * que é o nome do atributo lá na classe resposta
  */
-@Data
+
 @Entity
 public class Topico {
 
@@ -41,6 +41,15 @@ public class Topico {
 	private Curso curso;
 	@OneToMany(mappedBy = "topico")
 	private List<Resposta> respostas = new ArrayList<>();
+
+	public Topico() {
+	}
+
+	public Topico(String titulo, String mensagem, Curso curso) {
+		this.titulo = titulo;
+		this.mensagem = mensagem;
+		this.curso = curso;
+	}
 
 	@Override
 	public int hashCode() {
@@ -67,5 +76,67 @@ public class Topico {
 		return true;
 	}
 
+	public Long getId() {
+		return id;
+	}
 
+	public String getTitulo() {
+		return titulo;
+	}
+
+	public String getMensagem() {
+		return mensagem;
+	}
+
+	public LocalDateTime getDataCriacao() {
+		return dataCriacao;
+	}
+
+	public StatusTopico getStatus() {
+		return status;
+	}
+
+	public Usuario getAutor() {
+		return autor;
+	}
+
+	public Curso getCurso() {
+		return curso;
+	}
+
+	public List<Resposta> getRespostas() {
+		return respostas;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
+
+	public void setMensagem(String mensagem) {
+		this.mensagem = mensagem;
+	}
+
+	public void setDataCriacao(LocalDateTime dataCriacao) {
+		this.dataCriacao = dataCriacao;
+	}
+
+	public void setStatus(StatusTopico status) {
+		this.status = status;
+	}
+
+	public void setAutor(Usuario autor) {
+		this.autor = autor;
+	}
+
+	public void setCurso(Curso curso) {
+		this.curso = curso;
+	}
+
+	public void setRespostas(List<Resposta> respostas) {
+		this.respostas = respostas;
+	}
 }

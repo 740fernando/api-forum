@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
  */
 //Consigo controlar quais campos quero devolver, porque nem sempre eu quero devolver tudo que tem na
 //minha classe de domínio.
+    // quando eu estiver falando de TopicoDto, são dados que saem da API de volta para o cliente.
 @Data
 public class TopicoDto {
 
