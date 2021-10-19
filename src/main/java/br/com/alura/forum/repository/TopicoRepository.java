@@ -1,6 +1,8 @@
 package br.com.alura.forum.repository;
 
 import br.com.alura.forum.modelo.Topico;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -17,7 +19,7 @@ import java.util.List;
  *  @Repository, @Component. Esse, por ser interface, não precisa. O Spring já encontra a classe automaticamente.
  */
 public interface TopicoRepository extends JpaRepository<Topico, Long> {
-    List<Topico> findByCurso_Nome(String nomeCurso);
+    Page<Topico> findByCurso_Nome(String nomeCurso, Pageable paginacao);
 }
 /**
  * Essa interface, eu preciso herdar de alguma interface do Spring data. O Spring data tem algumas interfaces

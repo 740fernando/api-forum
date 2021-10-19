@@ -9,6 +9,9 @@ import br.com.alura.forum.modelo.Topico;
 import br.com.alura.forum.repository.CursoRepository;
 import br.com.alura.forum.repository.TopicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -44,12 +47,18 @@ public class TopicosController {
 
 
     @GetMapping
-    public List<TopicoDto>lista(String nomeCurso){
+    public Page<TopicoDto>lista(@RequestParam(required = false) String nomeCurso,
+                                @RequestParam int pagina, int qtd){
+
+        //para criar paginação, necessario criar um objeto do tipo Pagiable, o pagiable é um interface, então é
+        //necesario instanciar com PageRequest,- Nela, tem um método estático chamado of, em que passamos a página e a quantidade. Com isso, ele cria um objeto do tipo pageable.
+        Pageable paginacao = PageRequest.of(pagina,qtd);
+
         if(nomeCurso==null){
-            List<Topico> topicos =topicoRepository.findAll();
+            Page<Topico> topicos =topicoRepository.findAll(paginacao);
             return TopicoDto.converter(topicos);
         }else{
-            List<Topico> topicos = topicoRepository.findByCurso_Nome(nomeCurso);
+            Page<Topico> topicos = topicoRepository.findByCurso_Nome(nomeCurso,paginacao);
             return TopicoDto.converter(topicos);
         }
     }
@@ -108,6 +117,14 @@ public class TopicosController {
  * um relacionamento, "Nome do atributo do relacionamento" e, concatenado,
  * o "Nome do atributo", porque ele sabe que é para filtrar pelo relacionamento.
  *
+ *  Porém, como você pode observar, deu um erro de compilação. Quando usamos paginação,
+ *  o retorno do método findall não é mais um list, porque o list apenas traz a lista com
+ *  todos os tópicos, mas quando usamos paginação é interessante sabermos em qual página
+ *  estamos no momento, quantas tenho no total, quantos registros tenho. Pense no cliente
+ *  da nossa API REST. Ele dispara uma requisição usando paginação, mas recebe só os registros
+ *  daquela paginação. Ele pode ficar meio perdido. Esse tipo de informação é muito útil para o
+ *  cliente. Por isso o Spring não devolve um list. Ele devolve outra classe chamada page, que tem
+ *  um generics para você dizer qual é o tipo de classe com que esse page vai trabalhar
  *
 
  *
@@ -166,4 +183,21 @@ public class TopicosController {
  *  estava funcionando antes. Então vou fazer um if. Ou seja, if (topico.isPresent()). Se existe
  *  um registro de fato presente, vou retornar um return new DetalhesDoTopicoDto(topico), passando
  *  como parâmetro topico.
+ *
+ *  Pageable- Se quisermos fazer paginação, o Spring data já tem um esquema pronto para facilitar nossa vida.
+ *  Para fazer paginação, precisamos criar uma variável do tipo pageable, que é uma classe do Spring data que
+ *  serve justamente para fazer paginação. Vou criar essa variável, vou chamar de paginação = page.
+ *  ] Para criar essa interface pageable, vou precisar importar. Mas cuidado, tem três opções. A que
+ *  queremos é a do org.springframework.data. Para criar esse cara, usamos outra classe chamada pageRequest.
+ *  Nela, tem um método estático chamado of, em que passamos a página e a quantidade. Com isso, ele cria um
+ *  objeto do tipo pageable. E aí o que eu faço com esse objeto pageable que está na minha variável paginação? Se você olhar o
+ *   método findall, você vai ver que na verdade existem vários findall. Dentre eles têm um que recebe um
+ *  pageable como parâmetro. Então, podemos passar esse paginação como parâmetro para o método, que aí
+ *  o Spring data automaticamente vai saber que você quer fazer paginação e vai usar os parâmetros página
+ *  e quantidade para saber qual o primeiro registro e quantos registros ele vai carregar para você. Então,
+ * não precisamos implementar nada da consulta com paginação. Ele faz isso automaticamente.
+ *
+ *  Page- Dentro desse page tem a lista com os registros. Além dela, tem essas informações do número de páginas
+ *  , qual a página atual, quantos elementos tem no total. Ele já dispara umas consultas para fazer o count
+ *  de quantos registros tem no banco sozinho
  */
