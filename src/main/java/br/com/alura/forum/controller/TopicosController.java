@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -48,11 +49,11 @@ public class TopicosController {
 
     @GetMapping
     public Page<TopicoDto>lista(@RequestParam(required = false) String nomeCurso,
-                                @RequestParam int pagina, int qtd){
+                                @RequestParam int pagina, int qtd,@RequestParam String ordenacao){
 
         //para criar paginação, necessario criar um objeto do tipo Pagiable, o pagiable é um interface, então é
         //necesario instanciar com PageRequest,- Nela, tem um método estático chamado of, em que passamos a página e a quantidade. Com isso, ele cria um objeto do tipo pageable.
-        Pageable paginacao = PageRequest.of(pagina,qtd);
+        Pageable paginacao = PageRequest.of(pagina,qtd, Sort.Direction.DESC, ordenacao);
 
         if(nomeCurso==null){
             Page<Topico> topicos =topicoRepository.findAll(paginacao);
@@ -125,6 +126,20 @@ public class TopicosController {
  *  daquela paginação. Ele pode ficar meio perdido. Esse tipo de informação é muito útil para o
  *  cliente. Por isso o Spring não devolve um list. Ele devolve outra classe chamada page, que tem
  *  um generics para você dizer qual é o tipo de classe com que esse page vai trabalhar
+ *
+ *   Além de paginação, outra coisa comum nos projetos é que às vezes o cliente quer controlar
+ *   m que ordem virão os registros. Além de paginar, quero ordenar por algum atributo específico.
+ *   Como nós não definimos nada, no momento está vindo de ordem crescente pelo id, pela chave primária,
+ *   conforme vem do banco de dados. Mas na aula de hoje vamos mudar isso, vamos flexibilizar, deixar que
+ *   o cliente consiga controlar também qual ordem ele quer, por qual atributo do tópico ele quer ordenar
+ *   os registros.
+ *  Eu declarei só um atributo, mas preciso alterar a lógica para utilizar o novo parâmetro que
+ *  está chegando no método. Como eu faço isso? Na própria classe pageable, o Spring também embutiu
+ *  essa questão de ordenação. Se dermos uma olhada no método of, vamos ver que tem várias versões.
+ *  Tem um, que estamos utilizando, que só recebe a página e a quantidade de elementos, outro que recebe
+ *  um sort, e o terceiro recebe um tal de Direction e um string properties, que são as propriedades que
+ *  você quer ordenar. É justamente o que eu quero utilizar. Mas aí tenho que passar mais dois parâmetros,
+ *  o Direction, para dizer qual a direção, se é crescente ou decrescente. Eu quero que seja crescente.
  *
 
  *
@@ -199,5 +214,9 @@ public class TopicosController {
  *
  *  Page- Dentro desse page tem a lista com os registros. Além dela, tem essas informações do número de páginas
  *  , qual a página atual, quantos elementos tem no total. Ele já dispara umas consultas para fazer o count
- *  de quantos registros tem no banco sozinho
+ *  de quantos registros tem no banco sozinho. Ao utilizar o objeto Page, além de devolver os registros,
+ *  o Spring também devolve informações sobre a paginação no JSON de resposta , como número total de
+ *  registros e páginas.
+ *
+ *  Sort.Direction.DESC - Indica qual ordencação vai ser adotada Descendente ou Ascendente.
  */
