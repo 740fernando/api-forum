@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -49,11 +50,8 @@ public class TopicosController {
 
     @GetMapping
     public Page<TopicoDto>lista(@RequestParam(required = false) String nomeCurso,
-                                @RequestParam int pagina, int qtd,@RequestParam String ordenacao){
+                           @PageableDefault(sort="id",direction = Sort.Direction.DESC,size=10) Pageable paginacao){
 
-        //para criar paginação, necessario criar um objeto do tipo Pagiable, o pagiable é um interface, então é
-        //necesario instanciar com PageRequest,- Nela, tem um método estático chamado of, em que passamos a página e a quantidade. Com isso, ele cria um objeto do tipo pageable.
-        Pageable paginacao = PageRequest.of(pagina,qtd, Sort.Direction.DESC, ordenacao);
 
         if(nomeCurso==null){
             Page<Topico> topicos =topicoRepository.findAll(paginacao);
@@ -219,4 +217,15 @@ public class TopicosController {
  *  registros e páginas.
  *
  *  Sort.Direction.DESC - Indica qual ordencação vai ser adotada Descendente ou Ascendente.
+ *
+ *   @PageableDefault - Nesse PageableDefault tem alguns parâmetros. Consigo dizer que sort = id,
+ *   Direction.DESC. Com isso, ele está dizendo que a paginação default é id de maneira decrescente.
+ *   O default é: se não estiver vindo um parâmetro de ordenação.
+ *    Inclusive, dá para controlar também o default não só da ordem, mas também da paginação, porque
+ *    e se ele não passar nenhum parâmetro? Ele vai trazer todos os registros do banco de dados, porque
+ *    a paginação é opcional. Posso dizer que page = 0, size = 10. Se ele não passar os parâmetros de
+ *    paginação, traga da primeira página apenas dez registros. Consigo deixar por padrão qual é a paginação,
+ *    além da ordenação. É bem poderoso, bem simples, e o seu cliente da API consegue controlar a paginação,
+ *    a ordenação, e se ele não mandar os parâmetros a gente consegue controlar qual vai ser o comportamento
+ *    padrão.
  */
