@@ -9,6 +9,7 @@ import br.com.alura.forum.modelo.Topico;
 import br.com.alura.forum.repository.CursoRepository;
 import br.com.alura.forum.repository.TopicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.transaction.annotation.Transactional;
+
+
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Arrays;
@@ -49,6 +52,7 @@ public class TopicosController {
 
 
     @GetMapping
+    @Cacheable(value = "listaDeTopicos")
     public Page<TopicoDto>lista(@RequestParam(required = false) String nomeCurso,
                            @PageableDefault(sort="id",direction = Sort.Direction.DESC,size=10) Pageable paginacao){
 
@@ -228,4 +232,14 @@ public class TopicosController {
  *    além da ordenação. É bem poderoso, bem simples, e o seu cliente da API consegue controlar a paginação,
  *    a ordenação, e se ele não mandar os parâmetros a gente consegue controlar qual vai ser o comportamento
  *    padrão.
+ *
+ *    @Cacheable(value = "listaDeTopicos") - No nosso exemplo, vou colocar na nossa classe tópicos Controller
+ *    um método lista em cache. Em cima do método, temos que colocar a anotação @Cacheable, para falar para o
+ *    Spring guardar o retorno desse método em cache. Só cuidado na hora de fazer o import, porque existe a
+ *    mesma anotação no pacote da JPA. O que vamos utilizar no curso é do org.springframework.
+ *    Essa anotação tem um atributo que precisamos preencher. Um chamado value, em que temos que passar uma
+ *    string que vai ser o identificador único desse cache. Na nossa aplicação, posso ter vários métodos
+ *    anotados com @Cacheable, e o Spring precisa saber como ele vai diferenciar um do outro. Ele faz isso
+ *    utilizando o id único. Vou passar um nome, por exemplo, listaDeTopicos. Essa string vai funcionar como
+ *    sendo um id desse cache.
  */
