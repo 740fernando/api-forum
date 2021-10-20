@@ -10,10 +10,15 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-
-//habilita o modulo de seg na application
+/**
+ * Para habilitar e configurar o controle de autenticação e autorização do projeto,
+ * devemos criar uma classe e anotá-la com @Configuration e @EnableWebSecurity
+ *
+ * Devemos indicar ao Spring Security qual o algoritmo de hashing de senha que utilizaremos na API, chamando o método passwordEncoder(), dentro do método configure(AuthenticationManagerBuilder auth), que está na classe SecurityConfigurations
+ */
 @EnableWebSecurity
 @Configuration
 public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
@@ -34,8 +39,10 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
         http.authorizeRequests() //método que vamos precisar chamar para configurar quais requests vamos autorizar, e como vai ser essa autorização.
                 .antMatchers(HttpMethod.GET,"/topicos").permitAll() //antMatchers- Nós vamos falar para ele qual url quero filtrar e o que é para fazer, se é para emitir ou bloquear.
                 .antMatchers(HttpMethod.GET,"/topicos/*").permitAll()
+                .antMatchers(HttpMethod.POST,"/auth").permitAll()
                 .anyRequest().authenticated() // Qualquer outra requisição tem que estar autenticada
-                .and().formLogin(); //Existe esse método que é para falar para o Spring gerar um formulário de autenticação. O Spring já tem um formulário de autenticação e um controller que recebe as requisições desse formulário. Então vou chamar esse método porque quero utilizar esse formulário padrão do Spring.
+                .and().csrf().disable() //Csrf é uma abreviação para cross-site request forgery, que é um tipo de ataque hacker que acontece em aplicações web. Como vamos fazer autenticação via token, automaticamente nossa API está livre desse tipo de ataque. Nós vamos desabilitar isso para o Spring security não fazer a validação do token do csrf.
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); //aviso para o Spring security que no nosso projeto, quando eu fizer autenticação, não é para criar sessão, porque vamos usar token
     }
 
     //terceiro, que recebe um tal de web security, serve para fazermos configurações de recursos estáticos. São requisições para arquivo CSS, Javascript, imagens, etc. Não é nosso caso, já que estamos desenvolvendo só a parte do backend.
@@ -73,4 +80,9 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
  * de segurança. Por padrão, o Spring bloqueia todo acesso à nossa API.
  * Tudo está restrito até que eu faça a configuração e libere o que precisa
  * ser liberado.
+ *
+ * Para liberar acesso a algum endpoint da nossa API, devemos chamar o método http.authorizeRequests().antMatchers().permitAll() dentro do método configure(HttpSecurity http), que está na classe SecurityConfigurations
+ * O método anyRequest().authenticated() indica ao Spring Security para bloquear todos os endpoints que não foram liberados anteriormente com o método permitAll();
+ *
+ * Devemos indicar ao Spring Security qual o algoritmo de hashing de senha que utilizaremos na API, chamando o método passwordEncoder(), dentro do método configure(AuthenticationManagerBuilder auth), que está na classe SecurityConfigurations
  */

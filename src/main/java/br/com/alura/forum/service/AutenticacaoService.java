@@ -10,6 +10,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ *  UserDetailsService - A classe que implementa essa interface geralmente contém uma lógica para
+ *  validar as credenciais de um cliente que está se autenticando.
+ *
+ *
+ */
 
 @Service
 public class AutenticacaoService implements UserDetailsService {
@@ -26,3 +32,6 @@ public class AutenticacaoService implements UserDetailsService {
         throw  new UsernameNotFoundException("Dados inválidos");
     }
 }
+/**
+ * A lógica de autenticação, que consulta o usuário no banco de dados, deve implementar a interface UserDetailsService
+ */
