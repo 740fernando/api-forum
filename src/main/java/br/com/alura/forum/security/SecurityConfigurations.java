@@ -1,6 +1,10 @@
 package br.com.alura.forum.security;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -10,6 +14,26 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 @Configuration
 public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
+
+    //O primeiro, que recebe um authentication manager builder é um método que serve para configurar a parte de autenticação. A parte de controle de acesso, de login, fica nesse método.
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        super.configure(auth);
+    }
+
+
+    // O segundo, que recebe um tal de http security, serve para fazer configurações de autorização. A parte de URLs, quem pode acessar cada url, perfil de acesso.
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests() //método que vamos precisar chamar para configurar quais requests vamos autorizar, e como vai ser essa autorização.
+                .antMatchers(HttpMethod.GET,"/topicos").permitAll() //antMatchers- Nós vamos falar para ele qual url quero filtrar e o que é para fazer, se é para emitir ou bloquear.
+                .antMatchers(HttpMethod.GET,"/topicos/*").permitAll();
+    }
+    //terceiro, que recebe um tal de web security, serve para fazermos configurações de recursos estáticos. São requisições para arquivo CSS, Javascript, imagens, etc. Não é nosso caso, já que estamos desenvolvendo só a parte do backend.
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        super.configure(web);
+    }
 }
 /**
  * Eu vou precisar criar uma classe onde todas as configurações de segurança
