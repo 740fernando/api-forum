@@ -236,4 +236,6 @@ public class TopicosController {
  *    anotados com @Cacheable, e o Spring precisa saber como ele vai diferenciar um do outro. Ele faz isso
  *    utilizando o id único. Vou passar um nome, por exemplo, listaDeTopicos. Essa string vai funcionar como
  *    sendo um id desse cache.
+ *    Para o Spring invalidar algum cache após um determinado método ser chamado, devemos anotá-lo com @CacheEvict;
+ * Devemos utilizar cache apenas para as informações que nunca ou raramente são atualizadas no banco de dados.
  */
