@@ -1,5 +1,7 @@
-package br.com.alura.forum.security;
+package br.com.alura.forum.config.security;
 
+import br.com.alura.forum.service.AutenticacaoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -8,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 //habilita o modulo de seg na application
@@ -15,10 +18,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private AutenticacaoService autenticacaoService;
+
     //O primeiro, que recebe um authentication manager builder é um método que serve para configurar a parte de autenticação. A parte de controle de acesso, de login, fica nesse método.
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        super.configure(auth);
+        auth.userDetailsService(autenticacaoService).passwordEncoder(new BCryptPasswordEncoder());
     }
 
 
@@ -37,6 +43,11 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         super.configure(web);
     }
+
+    /** utilizado para encriptar a senha
+    public static void main(String[] args){
+        System.out.println(new BCryptPasswordEncoder().encode("123456"));
+    }*/
 }
 /**
  * Eu vou precisar criar uma classe onde todas as configurações de segurança
