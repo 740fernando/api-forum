@@ -9,6 +9,7 @@ import br.com.alura.forum.modelo.Topico;
 import br.com.alura.forum.repository.CursoRepository;
 import br.com.alura.forum.repository.TopicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,17 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * O problema é que em todos os métodos a URL vai se repetir. Se um dia eu quiser alterar,
- * vou ter que alterar em todos os métodos. Podemos tirar a anotação @RequestMapping(Value=
- * "/topicos", method = RequestMethod.GET) de cima do método e colocar em cima da classe.
- * Mas aí, na classe, não vou colocar o método, vou colocar só a URL. Então, é como se
- * disséssemos ao Spring: o TopicosController responde às aquisições que começam com "/
- *
- * E aí, no método cadastrar eu faço a mesma coisa. Só que aí é POST ao invés de GET, porque estou
- * postando uma informação, fazendo um cadastro. Dessa maneira, não teria mais conflito. O Spring
- * sabe que a URL é a mesma, mas os métodos são diferentes.
- */
+
 
 @RestController
 @RequestMapping("/topicos")//a mesma url vale para o metodo get e para o post
@@ -69,6 +60,7 @@ public class TopicosController {
     //para converter em TopicForm
     @PostMapping
     @Transactional
+    @CacheEvict(value="listaDeTopicos", allEntries = true)
      public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder){
         Topico topico= form.converter(cursoRepository);
         topicoRepository.save(topico);// salva novo topico
@@ -86,6 +78,7 @@ public class TopicosController {
 
     @PutMapping("/{id}")
     @Transactional
+    @CacheEvict(value="listaDeTopicos", allEntries = true)
     public  ResponseEntity<TopicoDto>atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoTopicoForm form ){
         Optional<Topico> optional = topicoRepository.findById(id);
         if(optional.isPresent()) {
@@ -97,6 +90,7 @@ public class TopicosController {
 
     @DeleteMapping("/{id}")
     @Transactional
+    @CacheEvict(value="listaDeTopicos", allEntries = true)
     public ResponseEntity<?> remover(@PathVariable Long id){
         Optional<Topico> optional = topicoRepository.findById(id);
         if(optional.isPresent()) {
