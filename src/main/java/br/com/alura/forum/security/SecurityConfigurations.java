@@ -27,8 +27,11 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests() //método que vamos precisar chamar para configurar quais requests vamos autorizar, e como vai ser essa autorização.
                 .antMatchers(HttpMethod.GET,"/topicos").permitAll() //antMatchers- Nós vamos falar para ele qual url quero filtrar e o que é para fazer, se é para emitir ou bloquear.
-                .antMatchers(HttpMethod.GET,"/topicos/*").permitAll();
+                .antMatchers(HttpMethod.GET,"/topicos/*").permitAll()
+                .anyRequest().authenticated() // Qualquer outra requisição tem que estar autenticada
+                .and().formLogin(); //Existe esse método que é para falar para o Spring gerar um formulário de autenticação. O Spring já tem um formulário de autenticação e um controller que recebe as requisições desse formulário. Então vou chamar esse método porque quero utilizar esse formulário padrão do Spring.
     }
+
     //terceiro, que recebe um tal de web security, serve para fazermos configurações de recursos estáticos. São requisições para arquivo CSS, Javascript, imagens, etc. Não é nosso caso, já que estamos desenvolvendo só a parte do backend.
     @Override
     public void configure(WebSecurity web) throws Exception {
