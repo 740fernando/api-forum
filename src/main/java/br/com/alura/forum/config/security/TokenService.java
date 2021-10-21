@@ -1,6 +1,7 @@
 package br.com.alura.forum.config.security;
 
 import br.com.alura.forum.modelo.Usuario;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +47,12 @@ public class TokenService {
         }catch (Exception e ){
             return false;
         }
+    }
+
+    public Long getIdUsuario(String token) {
+        Claims claims = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();// método devolve o Jws claims, que é um objeto onde consigo recuperar o token e as informações que setei dentro do token. Mas quando eu fizer essa chamada, se o token estiver válido, ele devolve o objeto. Se estiver inválido ou nulo, ele joga uma exception. Eu vou fazer um try catch, vou colocar o código dentro do try. Se ele rodou tudo ok, o token está válido. Se chegou na linha de baixo é porque o token está válido, retorna true, porque não quero recuperar nenhuma informação do token nesse método. Se deu alguma exception, ele vai entrar no false
+        return Long.parseLong(claims.getSubject());
+
     }
 }
 
