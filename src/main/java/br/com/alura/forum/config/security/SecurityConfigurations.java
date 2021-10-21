@@ -29,6 +29,9 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     @Autowired
     private AutenticacaoService autenticacaoService;
 
+    @Autowired
+    private TokenService tokenService;
+
     @Override
     @Bean // Esse método devolve o authenticationManager, deste modo, é possivel implementar a injecao de dependencias
     protected AuthenticationManager authenticationManager() throws Exception{
@@ -54,7 +57,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated() // Qualquer outra requisição tem que estar autenticada
                 .and().csrf().disable() //Csrf é uma abreviação para cross-site request forgery, que é um tipo de ataque hacker que acontece em aplicações web. Como vamos fazer autenticação via token, automaticamente nossa API está livre desse tipo de ataque. Nós vamos desabilitar isso para o Spring security não fazer a validação do token do csrf.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)//aviso para o Spring security que no nosso projeto, quando eu fizer autenticação, não é para criar sessão, porque vamos usar token
-                .and().addFilterBefore(new AutenticacaoViaTokenFilter(), UsernamePasswordAuthenticationFilter.class);//No nosso método configure, que tem as URLs, depois que eu configurei que a autenticação é stateless, vou colocar mais uma sentença, o addFilter. Só que não posso chamar isso, porque o Spring internamente já tem o filtro de autenticação. Ele precisa saber qual a ordem dos filtros, quem vem antes. Por isso, tem que ser o método addFilterBefore. Passo para ele quem é o filtro que quero adicionar e antes de quem esse filtro virá. Depois, damos um new AutenticacaoViaTokenFilter(), UsernamePasswordAuthenticationFilter.class. Esse é o token que já tem no Spring por padrão. Vou falar para o nosso filtro rodar antes dele.
+                .and().addFilterBefore(new AutenticacaoViaTokenFilter(tokenService), UsernamePasswordAuthenticationFilter.class);//No nosso método configure, que tem as URLs, depois que eu configurei que a autenticação é stateless, vou colocar mais uma sentença, o addFilter. Só que não posso chamar isso, porque o Spring internamente já tem o filtro de autenticação. Ele precisa saber qual a ordem dos filtros, quem vem antes. Por isso, tem que ser o método addFilterBefore. Passo para ele quem é o filtro que quero adicionar e antes de quem esse filtro virá. Depois, damos um new AutenticacaoViaTokenFilter(), UsernamePasswordAuthenticationFilter.class. Esse é o token que já tem no Spring por padrão. Vou falar para o nosso filtro rodar antes dele.
     }
 
     //terceiro, que recebe um tal de web security, serve para fazermos configurações de recursos estáticos. São requisições para arquivo CSS, Javascript, imagens, etc. Não é nosso caso, já que estamos desenvolvendo só a parte do backend.

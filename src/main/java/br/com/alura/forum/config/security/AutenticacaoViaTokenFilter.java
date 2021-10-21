@@ -1,5 +1,6 @@
 package br.com.alura.forum.config.security;
 
+import antlr.Token;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -10,12 +11,21 @@ import java.io.IOException;
 
 public class AutenticacaoViaTokenFilter extends OncePerRequestFilter {
 
+    private TokenService tokenService;
+
+    public AutenticacaoViaTokenFilter(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         String token = recuperarToken(request);
-        System.out.println(token);
+
+        boolean valido = tokenService.isTokenValido(token);
+        System.out.println(valido);
+
 
         filterChain.doFilter(request,response);
 

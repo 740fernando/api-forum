@@ -37,6 +37,16 @@ public class TokenService {
                 .compact();// compacta e transforma em uma string
 
     }
+
+    public boolean isTokenValido(String token) {
+
+        try {
+            Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token); // método devolve o Jws claims, que é um objeto onde consigo recuperar o token e as informações que setei dentro do token. Mas quando eu fizer essa chamada, se o token estiver válido, ele devolve o objeto. Se estiver inválido ou nulo, ele joga uma exception. Eu vou fazer um try catch, vou colocar o código dentro do try. Se ele rodou tudo ok, o token está válido. Se chegou na linha de baixo é porque o token está válido, retorna true, porque não quero recuperar nenhuma informação do token nesse método. Se deu alguma exception, ele vai entrar no false
+            return  true;
+        }catch (Exception e ){
+            return false;
+        }
+    }
 }
 
 /**
@@ -46,4 +56,11 @@ public class TokenService {
  * No subject, vou colocar logado.getId e vou passar o id. Mas o id precisa que seja string. Também preciso dizer qual foi a data de geração do token. Quando ele foi concedido. E ele trabalha usando a API de datas antigas do Java, então ele está esperando um date. Eu vou criar uma variável ali em cima de date e vou importar do Java.
  *
  *
+ *  public boolean isTokenValido(String token) {
+ *
+ *   Aqui temos aquele método para gerar o token. Preciso ter esse método para fazer a validação, para validar se o token que está chegando está ok ou não. Para fazer isso, vamos usar de novo o tal de jwts. Só que não vou chamar o builder, porque não quero criar um novo token. Vou chamar o método parser, que é o método que tem a lógica para fazer o passe de um token. Você passa para ele um token, ele vai descriptografar e verificar se está ok.
+ *
+ *  Na sequência, temos que chamar primeiro setSigningKey. Tenho que passar aquele secret da nossa aplicação, que é a chave que ele usa para criptografar e descriptografar. Tem um método chamado parseClaimsJws. Esse é o método que vamos chamar passando como parâmetro o token.
+
+ Esse método devolve o Jws claims, que é um objeto onde consigo recuperar o token e as informações que setei dentro do token. Mas quando eu fizer essa chamada, se o token estiver válido, ele devolve o objeto. Se estiver inválido ou nulo, ele joga uma exception. Eu vou fazer um try catch, vou colocar o código dentro do try. Se ele rodou tudo ok, o token está válido. Se chegou na linha de baixo é porque o token está válido, retorna true, porque não quero recuperar nenhuma informação do token nesse método. Se deu alguma exception, ele vai entrar no false
  */
