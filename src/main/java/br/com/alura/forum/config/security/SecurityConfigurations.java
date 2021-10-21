@@ -58,7 +58,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/topicos").permitAll() //antMatchers- Nós vamos falar para ele qual url quero filtrar e o que é para fazer, se é para emitir ou bloquear.
                 .antMatchers(HttpMethod.GET,"/topicos/*").permitAll()
                 .antMatchers(HttpMethod.POST,"/auth").permitAll()
-                .antMatchers(HttpMethod.GET,"/actuator/*").permitAll() //Para testes, vou colocar um permitAll, mas quando você for colocar sua API em produção, a ideia é que você remova isso, porque esse endpoint devolve informações sensíveis sobre a aplicação, você não quer deixar isso aberto para qualquer pessoa. Vai ser só para sua equipe, a equipe de infraestrutura da sua empresa.
+                .antMatchers(HttpMethod.GET,"/actuator/**").permitAll() //Para testes, vou colocar um permitAll, mas quando você for colocar sua API em produção, a ideia é que você remova isso, porque esse endpoint devolve informações sensíveis sobre a aplicação, você não quer deixar isso aberto para qualquer pessoa. Vai ser só para sua equipe, a equipe de infraestrutura da sua empresa.
                 .anyRequest().authenticated() // Qualquer outra requisição tem que estar autenticada
                 .and().csrf().disable() //Csrf é uma abreviação para cross-site request forgery, que é um tipo de ataque hacker que acontece em aplicações web. Como vamos fazer autenticação via token, automaticamente nossa API está livre desse tipo de ataque. Nós vamos desabilitar isso para o Spring security não fazer a validação do token do csrf.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)//aviso para o Spring security que no nosso projeto, quando eu fizer autenticação, não é para criar sessão, porque vamos usar token
@@ -68,7 +68,8 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     //terceiro, que recebe um tal de web security, serve para fazermos configurações de recursos estáticos. São requisições para arquivo CSS, Javascript, imagens, etc. Não é nosso caso, já que estamos desenvolvendo só a parte do backend.
     @Override
     public void configure(WebSecurity web) throws Exception {
-        super.configure(web);
+        web.ignoring().antMatchers("/**.html","/v2/api-docs","/webjars/**","/configuration/**",
+                "/swagger-resources/**");
     }
 
     /** utilizado para encriptar a senha
