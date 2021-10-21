@@ -2,8 +2,10 @@ package br.com.alura.forum.config.security;
 
 import br.com.alura.forum.service.AutenticacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -25,6 +27,14 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AutenticacaoService autenticacaoService;
+
+    @Override
+    @Bean // Esse método devolve o authenticationManager, deste modo, é possivel implementar a injecao de dependencias
+    protected AuthenticationManager authenticationManager() throws Exception{
+        return super.authenticationManager();
+    }
+
+
 
     //O primeiro, que recebe um authentication manager builder é um método que serve para configurar a parte de autenticação. A parte de controle de acesso, de login, fica nesse método.
     @Override
