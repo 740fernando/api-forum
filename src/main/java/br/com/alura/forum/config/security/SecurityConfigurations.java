@@ -58,6 +58,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/topicos").permitAll() //antMatchers- Nós vamos falar para ele qual url quero filtrar e o que é para fazer, se é para emitir ou bloquear.
                 .antMatchers(HttpMethod.GET,"/topicos/*").permitAll()
                 .antMatchers(HttpMethod.POST,"/auth").permitAll()
+                .antMatchers(HttpMethod.GET,"/actuator/*").permitAll() //Para testes, vou colocar um permitAll, mas quando você for colocar sua API em produção, a ideia é que você remova isso, porque esse endpoint devolve informações sensíveis sobre a aplicação, você não quer deixar isso aberto para qualquer pessoa. Vai ser só para sua equipe, a equipe de infraestrutura da sua empresa.
                 .anyRequest().authenticated() // Qualquer outra requisição tem que estar autenticada
                 .and().csrf().disable() //Csrf é uma abreviação para cross-site request forgery, que é um tipo de ataque hacker que acontece em aplicações web. Como vamos fazer autenticação via token, automaticamente nossa API está livre desse tipo de ataque. Nós vamos desabilitar isso para o Spring security não fazer a validação do token do csrf.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)//aviso para o Spring security que no nosso projeto, quando eu fizer autenticação, não é para criar sessão, porque vamos usar token
@@ -108,5 +109,12 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
  Por que não é possível fazer injeção de dependências com a anotação @Autowired na classe AutenticacaoViaTokenFilter?
  O filtro foi instanciado manualmente por nós, na classe SecurityConfigurations e portanto o Spring não consegue realizar injeção de dependências via @Autowired.
 
+ Por que essa autenticação foi feita com a classe SecurityContextHolder e não com a AuthenticationManager?
+ A classe AuthenticationManager deve ser utilizada apenas na lógica de autenticação via username/password, para a geração do token.
 
+ Para enviar o token JWT na requisição, é necessário adicionar o cabeçalho Authorization, passando como valor Bearer token;
+ Para criar um filtro no Spring, devemos criar uma classe que herda da classe OncePerRequestFilter;
+ Para recuperar o token JWT da requisição no filter, devemos chamar o método request.getHeader("Authorization");
+ Para habilitar o filtro no Spring Security, devemos chamar o método and().addFilterBefore(new AutenticacaoViaTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+ Para indicar ao Spring Security que o cliente está autenticado, devemos utilizar a classe SecurityContextHolder, chamando o método SecurityContextHolder.getContext().setAuthentication(authentication).
  */

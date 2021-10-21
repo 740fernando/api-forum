@@ -41,6 +41,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		<!--É uma API que tem endpoints que devolvem um JSON com informações sobre a API. É uma facilidade para conseguir monitorar e acompanhar o andamento da nossa API-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
 		<!-- driver JDBC do MySQL-->
 		<dependency>
 			<groupId>mysql</groupId>
