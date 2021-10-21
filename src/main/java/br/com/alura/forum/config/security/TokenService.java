@@ -13,10 +13,10 @@ import java.util.Date;
 public class TokenService {
 
 
-    @Value("${forum.jwt.expiration}") //Sintaxe para importacao de atributo do application.properties
+    @Value("${forum.jwt.expiration}") //Sintaxe para fazer injeção de dependências de propriedades do arquivo application.properties.
     private String expiration;
 
-    @Value("${forum.jwt.expiration}") //Sintaxe para importacao de atributo do application.properties
+    @Value("${forum.jwt.secret}") //Sintaxe para azer injeção de dependências de propriedades do arquivo application.properties.
     private String secret;
 
 
@@ -24,8 +24,7 @@ public class TokenService {
 
         Usuario logado = (Usuario) authentication.getPrincipal(); //Esse authentication tem um método chamado getPrincipal para conseguirmos recuperar o usuário que está logado. Eu vou jogá-lo em uma variável usuário, que vou chamar de logado. Vai dar um erro de compilação, porque o getPrincipal devolve um object, então tenho que fazer um cast para usuário.
         Date hoje = new Date();
-        Long experationLong = Long.parseLong(expiration);
-        Date dataExpiracao= new Date(hoje.getTime()+experationLong);// converte hoje para milisegegundo e soma com expiration
+        Date dataExpiracao= new Date(hoje.getTime()+Long.parseLong(expiration));// converte hoje para milisegegundo e soma com expiration
 
 
 
